@@ -1,9 +1,10 @@
-package ticket
+package scrap
 
 import (
 	"encoding/json"
-	"github.com/sirupsen/logrus"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 )
@@ -41,7 +42,7 @@ func (h *ticketHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(response); err != nil{
+	if _, err := w.Write(response); err != nil {
 		logrus.WithField("error", err).Error("Error writing response")
 	}
 }
@@ -51,7 +52,7 @@ func (h *ticketHandler) GetById(w http.ResponseWriter, r *http.Request) {
 	id := vars["id"]
 	ticket, err := h.ticketService.FindTicketById(id)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"error":err, "id": id}).Error("Unable to find ticket")
+		logrus.WithFields(logrus.Fields{"error": err, "id": id}).Error("Unable to find ticket")
 		http.Error(w, "Unable to find ticket", http.StatusInternalServerError)
 		return
 	}
@@ -65,7 +66,7 @@ func (h *ticketHandler) GetById(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(response); err != nil{
+	if _, err := w.Write(response); err != nil {
 		logrus.WithField("error", err).Error("Error writing response")
 	}
 }
@@ -74,7 +75,7 @@ func (h *ticketHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var ticket Ticket
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&ticket); err != nil{
+	if err := decoder.Decode(&ticket); err != nil {
 		logrus.Error("Unable to decode ticket")
 		http.Error(w, "Bad format for ticket", http.StatusBadRequest)
 		return
@@ -95,7 +96,7 @@ func (h *ticketHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if _, err = w.Write(response); err != nil{
+	if _, err = w.Write(response); err != nil {
 		logrus.WithField("error", err).Error("Error writing response")
 	}
 

@@ -2,11 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
 
-	"github.com/PuerkitoBio/goquery"
-	"github.com/joja5627/cl-webscraper/cl-scraper-backend/internal/async"
+	"github.com/joja5627/web-scrapper/internal/scrape"
 )
 
 var (
@@ -21,34 +18,6 @@ func main() {
 		urls = append(urls, fullURL)
 	}
 
-	var links []string
-	c := async.NewClient(http.DefaultClient, len(urls))
-	async.FetchAll(urls, c)
-
-	for i := 0; i < len(urls); i++ {
-		select {
-		case resp := <-c.Resp:
-			//fmt.Printf("Status received for %s: %d\n", resp.Request.URL, resp.StatusCode)
-
-			document, err := goquery.NewDocumentFromReader(resp.Body)
-			if err != nil {
-				log.Fatal("Error loading HTTP response body. ", err)
-			}
-
-			document.Find(".result-row .result-image").Each(func(i int, s *goquery.Selection) {
-
-				if href, ok := s.Attr("href"); ok {
-					links = append(links, href)
-				} else {
-					fmt.Printf("No link found %s\n", s.Text())
-				}
-
-			})
-
-		case err := <-c.Err:
-			fmt.Printf("Error received: %s\n", err)
-		}
-	}
-
-	fmt.Println("Length:", len(links))
+	links := scrape.ScrapeCL(urls)
+	fmt.Println(len(links))
 }
